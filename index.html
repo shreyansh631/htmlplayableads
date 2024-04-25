@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coloring Game</title>
+    <!-- Include Konva.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/konva@8.0.0/konva.min.js"></script>
+    <style>
+        /* Add some styling */
+        #container {
+            margin: 20px auto;
+            border: 2px solid #000;
+        }
+        #colorPalette {
+            margin-top: 10px;
+        }
+        .color {
+            width: 30px;
+            height: 30px;
+            display: inline-block;
+            cursor: pointer;
+            border: 1px solid #000;
+            margin-right: 5px;
+        }
+        .playButton {
+            display: block;
+            width: 200px;
+            margin: 20px auto;
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div id="container"></div>
+    <div id="colorPalette">
+        <div class="color" style="background-color: red;"></div>
+        <div class="color" style="background-color: blue;"></div>
+        <div class="color" style="background-color: green;"></div>
+        <div class="color" style="background-color: yellow;"></div>
+        <div class="color" style="background-color: orange;"></div>
+    </div>
+    <a href="https://play.google.com/store/apps/details?id=com.iz.coloring.games.kids.drawing.book.color.by.number&hl=en&gl=US&pli=1" class="playButton">Play Now</a>
+
+    <script>
+        // Initialize Konva.js stage and layer
+        var stage = new Konva.Stage({
+            container: 'container',
+            width: 500,
+            height: 300
+        });
+        var layer = new Konva.Layer();
+        stage.add(layer);
+        var fillColor;
+        // Create a rectangle shape
+        var rect = new Konva.Rect({
+            x: 50,
+            y: 50,
+            width: 400,
+            height: 200,
+            fill: 'white',
+            stroke: 'black',
+            strokeWidth: 2
+        });
+        layer.add(rect);
+        layer.draw();
+
+        // Add event listeners to color palette
+        var colors = document.querySelectorAll('.color');
+        colors.forEach(function(color) {
+            color.addEventListener('click', function() {
+                // Get the color value of the clicked color
+                 fillColor = this.style.backgroundColor;
+                //rect.fill(fillColor);
+                layer.draw();
+            });
+        });
+
+        // Add event listeners for mouse interaction on the rectangle
+        var isDrawing = false;
+        rect.on('mousedown touchstart', function() {
+            isDrawing = true;
+            var pos = stage.getPointerPosition();
+            lastLine = new Konva.Line({
+                stroke: fillColor,
+                strokeWidth: 5,
+                globalCompositeOperation: 'source-over',
+                points: [pos.x, pos.y]
+            });
+            layer.add(lastLine);
+        });
+
+        stage.on('mouseup touchend', function() {
+            isDrawing = false;
+        });
+
+        // Draw lines while dragging the mouse
+        rect.on('mousemove touchmove', function() {
+            if (!isDrawing) {
+                return;
+            }
+            var pos = stage.getPointerPosition();
+            var newPoints = lastLine.points().concat([pos.x, pos.y]);
+            lastLine.points(newPoints);
+            layer.batchDraw();
+        });
+    </script>
+</body>
+</html>
+<!--https://play.google.com/store/apps/details?id=com.iz.coloring.games.kids.drawing.book.color.by.number&hl=en&gl=US&pli=1-->
